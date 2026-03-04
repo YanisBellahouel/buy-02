@@ -81,7 +81,7 @@ stage('Deploy') {
 
             // 2. Sécurité supplémentaire : on essaie de supprimer les conteneurs
             // par nom au cas où ils ne seraient pas liés au compose
-            sh 'docker rm -f mongodb zookeeper || true'
+            sh 'docker rm -f mongodb zookeeper /kafka || true'
 
             // 3. On relance proprement
             sh 'docker-compose up -d'
