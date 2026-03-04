@@ -43,7 +43,7 @@ pipeline {
                         sh '''
                         mvn clean verify sonar:sonar \
                           -Dsonar.projectKey=user-service \
-                          -Dsonar.host.url=http://host.docker.internal:9000 \
+                          -Dsonar.host.url=http://172.17.0.1:9000 \
                           -Dsonar.token=sqp_fa504a9ed051faec67fb13609224df8636c291fd
                         '''
                     }
