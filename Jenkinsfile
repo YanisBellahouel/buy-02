@@ -72,8 +72,11 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+stage('Deploy') {
             steps {
+                // Le flag -v supprime aussi les volumes anonymes si nécessaire
+                // Le --remove-orphans nettoie les services qui ne sont plus dans le fichier
+                sh 'docker-compose down'
                 sh 'docker-compose up -d'
             }
         }
