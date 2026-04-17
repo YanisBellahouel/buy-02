@@ -1,0 +1,23 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: cart-service
+  data:
+    mongodb:
+      uri: mongodb://admin:admin123@localhost:27017/cartdb?authSource=admin
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# URLs des autres services via Eureka
+services:
+  product-service:
+    name: product-service
+  user-service:
+    name: user-service
