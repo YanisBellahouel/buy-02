@@ -1,8 +1,12 @@
 package com.buy01.cart_service.controller;
 
+import com.buy01.cart_service.dto.CheckoutRequest;
+import com.buy01.cart_service.dto.CheckoutResponse;
 import com.buy01.cart_service.model.Cart;
 import com.buy01.cart_service.model.CartItem;
 import com.buy01.cart_service.service.CartService;
+import com.buy01.cart_service.service.CheckoutService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CartController {
 
-    private final CartService cartService;
+	private final CartService cartService;
+	private final CheckoutService checkoutService;
 
     // GET /api/cart/{clientId}
     @GetMapping("/{clientId}")
@@ -27,6 +32,14 @@ public class CartController {
             @RequestBody CartItem item) {
         return ResponseEntity.ok(cartService.addItem(clientId, item));
     }
+
+	// POST /api/cart/{clientId}/checkout
+	@PostMapping("/{clientId}/checkout")
+	public ResponseEntity<CheckoutResponse> checkout(
+			@PathVariable String clientId,
+			@RequestBody CheckoutRequest request) {
+		return ResponseEntity.ok(checkoutService.checkout(clientId, request));
+	}
 
     // PUT /api/cart/{clientId}/items/{productId}
     @PutMapping("/{clientId}/items/{productId}")

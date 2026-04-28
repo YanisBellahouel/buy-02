@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CartItem {
     private String productId;
-    private String productName;   // snapshot
-    private Double productPrice;  // snapshot
-    private String imageId;       // snapshot
+    private String productName;
+    private Double productPrice;
+    private String imageId;
+	private String sellerId;
     private Integer quantity;
 }
