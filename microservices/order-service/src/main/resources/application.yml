@@ -22,3 +22,7 @@ services:
     name: user-service
   product-service:
     name: product-service
+
+jwt:
+  secret: mySecretKeyForJWTTokenGenerationMustBeLongEnoughForHS512AlgorithmToWorkProperly
+  expiration: 86400000
