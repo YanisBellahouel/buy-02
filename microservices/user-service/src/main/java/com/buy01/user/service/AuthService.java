@@ -2,6 +2,7 @@ package com.buy01.user.service;
 
 import com.buy01.user.dto.*;
 import com.buy01.user.exception.BadRequestException;
+import com.buy01.user.model.Role;
 import com.buy01.user.model.User;
 import com.buy01.user.repository.UserRepository;
 import com.buy01.user.security.JwtTokenProvider;
@@ -22,16 +23,15 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ProfileService profileService; // Ajout
 
     public AuthResponse register(RegisterRequest request) {
         log.info("Attempting to register user with email: {}", request.getEmail());
 
-        // Vérifier si l'email existe déjà
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email already exists");
         }
 
-        // Créer l'utilisateur
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -44,6 +44,15 @@ public class AuthService {
         user = userRepository.save(user);
         log.info("User registered successfully with id: {}", user.getId());
 
+        // Créer le profil selon le rôle
+        if (user.getRole() == Role.CLIENT) {
+            profileService.createClientProfile(user.getId());
+            log.info("Client profile created for user: {}", user.getId());
+        } else if (user.getRole() == Role.SELLER) {
+            profileService.createSellerProfile(user.getId());
+            log.info("Seller profile created for user: {}", user.getId());
+        }
+
         // Envoyer événement Kafka
         try {
             String message = String.format("USER_REGISTERED:%s:%s:%s",
@@ -54,7 +63,6 @@ public class AuthService {
             log.error("Failed to send Kafka event", e);
         }
 
-        // Générer token
         String token = tokenProvider.generateToken(
             user.getId(),
             user.getEmail(),

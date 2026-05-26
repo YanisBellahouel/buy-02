@@ -34,6 +34,18 @@ spring:
           predicates:
             - Path=/api/media/**
 
+        # Nouveau - buy02
+        - id: cart-service
+          uri: lb://CART-SERVICE
+          predicates:
+            - Path=/api/cart/**
+
+        # Nouveau - buy02
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/api/orders/**
+
 eureka:
   client:
     service-url:

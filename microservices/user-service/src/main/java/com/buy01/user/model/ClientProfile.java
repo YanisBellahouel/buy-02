@@ -8,31 +8,24 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "users")
-public class User {
+@Document(collection = "client_profiles")
+public class ClientProfile {
 
     @Id
     private String id;
 
-    private String name;
-
     @Indexed(unique = true)
-    private String email;
+    private String clientId;  // ref users._id (role == CLIENT)
 
-    private String password;
+    private Double totalSpent = 0.0;
+    private Integer totalOrders = 0;
+    private List<BoughtProductSummary> mostBoughtProducts = new ArrayList<>();
 
-    private Role role;
-
-    private String avatar;
-
-    // Ajouts buy02
-    private Address shippingAddress;
-    private String phoneNumber;
-
-    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
