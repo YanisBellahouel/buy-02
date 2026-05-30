@@ -2,6 +2,7 @@ package com.buy01.product.service;
 
 import com.buy01.product.dto.CreateProductRequest;
 import com.buy01.product.dto.ProductResponse;
+import com.buy01.product.dto.SearchProductRequest;
 import com.buy01.product.dto.UpdateProductRequest;
 import com.buy01.product.exception.ResourceNotFoundException;
 import com.buy01.product.exception.UnauthorizedException;
@@ -141,6 +142,49 @@ public class ProductService {
             log.error("Failed to send Kafka event", e);
         }
     }
+
+	// Recherche par mot-clé
+public List<ProductResponse> searchByKeyword(String keyword) {
+    log.info("Searching products with keyword: {}", keyword);
+    return productRepository
+            .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword)
+            .stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+}
+
+// Filtrage par catégorie
+public List<ProductResponse> filterByCategory(String category) {
+    log.info("Filtering products by category: {}", category);
+    return productRepository.findByCategory(category)
+            .stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+}
+
+// Filtrage par prix
+public List<ProductResponse> filterByPrice(Double minPrice, Double maxPrice) {
+    log.info("Filtering products by price: {} - {}", minPrice, maxPrice);
+    return productRepository.findByPriceBetween(minPrice, maxPrice)
+            .stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+}
+
+// Recherche combinée
+public List<ProductResponse> searchProducts(SearchProductRequest request) {
+    log.info("Searching products with filters: {}", request);
+
+    String keyword = request.getKeyword() != null ? request.getKeyword() : "";
+    String category = request.getCategory() != null ? request.getCategory() : "";
+    Double minPrice = request.getMinPrice() != null ? request.getMinPrice() : 0.0;
+    Double maxPrice = request.getMaxPrice() != null ? request.getMaxPrice() : Double.MAX_VALUE;
+
+    return productRepository.searchProducts(keyword, category, minPrice, maxPrice)
+            .stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+}
 
     private ProductResponse mapToResponse(Product product) {
         ProductResponse response = new ProductResponse();

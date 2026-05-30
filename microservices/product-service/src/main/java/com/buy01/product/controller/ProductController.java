@@ -2,6 +2,7 @@ package com.buy01.product.controller;
 
 import com.buy01.product.dto.CreateProductRequest;
 import com.buy01.product.dto.ProductResponse;
+import com.buy01.product.dto.SearchProductRequest;
 import com.buy01.product.dto.UpdateProductRequest;
 import com.buy01.product.service.ProductService;
 import jakarta.validation.Valid;
@@ -76,4 +77,34 @@ public class ProductController {
         productService.deleteProduct(userId, id);
         return ResponseEntity.ok(Map.of("message", "Product deleted successfully"));
     }
+
+	// GET /api/products/search?keyword=phone
+@GetMapping("/search")
+public ResponseEntity<List<ProductResponse>> searchByKeyword(
+        @RequestParam String keyword) {
+    return ResponseEntity.ok(productService.searchByKeyword(keyword));
+}
+
+// GET /api/products/filter?category=electronics
+@GetMapping("/filter")
+public ResponseEntity<List<ProductResponse>> filterByCategory(
+        @RequestParam(required = false) String category,
+        @RequestParam(required = false) Double minPrice,
+        @RequestParam(required = false) Double maxPrice) {
+
+    if (category != null) {
+        return ResponseEntity.ok(productService.filterByCategory(category));
+    }
+    if (minPrice != null && maxPrice != null) {
+        return ResponseEntity.ok(productService.filterByPrice(minPrice, maxPrice));
+    }
+    return ResponseEntity.ok(productService.getAllProducts());
+}
+
+// POST /api/products/search
+@PostMapping("/search")
+public ResponseEntity<List<ProductResponse>> searchProducts(
+        @RequestBody SearchProductRequest request) {
+    return ResponseEntity.ok(productService.searchProducts(request));
+}
 }

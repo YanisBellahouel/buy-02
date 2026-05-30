@@ -20,18 +20,17 @@ public class Product {
     private String id;
 
     private String name;
-
     private String description;
-
     private Double price;
-
     private Integer quantity;
+    private String userId;
+    private List<String> imageIds = new ArrayList<>();
 
-    private String userId;  // ID du seller propriétaire
-
-    private List<String> imageIds = new ArrayList<>();  // IDs des images dans Media Service
+    // Ajouts buy02
+    private String category;
+    private List<String> tags = new ArrayList<>();
+    private Boolean isAvailable = true;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 }
