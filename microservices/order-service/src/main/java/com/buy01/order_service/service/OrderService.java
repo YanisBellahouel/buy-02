@@ -50,13 +50,24 @@ public class OrderService {
         return orderRepository.findBySellerIdAndStatus(sellerId, status);
     }
 
-    // Mettre à jour le statut d'une commande
-    public Order updateStatus(String orderId, OrderStatus newStatus) {
-        Order order = getOrderById(orderId);
-        order.setStatus(newStatus);
-        order.setUpdatedAt(LocalDateTime.now());
-        return orderRepository.save(order);
+private final ProfileUpdateService profileUpdateService; // Ajout
+
+// Mettre à jour le statut d'une commande
+public Order updateStatus(String orderId, OrderStatus newStatus) {
+    Order order = getOrderById(orderId);
+    order.setStatus(newStatus);
+    order.setUpdatedAt(LocalDateTime.now());
+    order = orderRepository.save(order);
+
+    // Mettre à jour les profils si la commande est livrée
+    if (newStatus == OrderStatus.DELIVERED) {
+        log.info("Order {} delivered, updating profiles", orderId);
+        profileUpdateService.updateClientProfile(order);
+        profileUpdateService.updateSellerProfile(order);
     }
+
+    return order;
+}
 
     // Annuler une commande
     public Order cancelOrder(String orderId) {
