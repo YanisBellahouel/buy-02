@@ -14,6 +14,12 @@ public class ProductResponse {
     private Integer quantity;
     private String userId;
     private List<String> imageIds;
+
+    // Ajouts buy02
+    private String category;
+    private List<String> tags;
+    private Boolean isAvailable;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

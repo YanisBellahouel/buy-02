@@ -186,17 +186,50 @@ public List<ProductResponse> searchProducts(SearchProductRequest request) {
             .collect(Collectors.toList());
 }
 
-    private ProductResponse mapToResponse(Product product) {
-        ProductResponse response = new ProductResponse();
-        response.setId(product.getId());
-        response.setName(product.getName());
-        response.setDescription(product.getDescription());
-        response.setPrice(product.getPrice());
-        response.setQuantity(product.getQuantity());
-        response.setUserId(product.getUserId());
-        response.setImageIds(product.getImageIds());
-        response.setCreatedAt(product.getCreatedAt());
-        response.setUpdatedAt(product.getUpdatedAt());
-        return response;
+// Mettre à jour le stock après une commande
+public void updateStock(String productId, Integer quantityOrdered) {
+    log.info("Updating stock for product: {}", productId);
+
+    Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + productId));
+
+    int newQuantity = product.getQuantity() - quantityOrdered;
+
+    if (newQuantity < 0) {
+        throw new RuntimeException("Insufficient stock for product: " + productId);
     }
+
+    product.setQuantity(newQuantity);
+
+    // Si stock = 0, marquer comme indisponible
+    if (newQuantity == 0) {
+        product.setIsAvailable(false);
+        log.info("Product {} is now out of stock", productId);
+    }
+
+    product.setUpdatedAt(LocalDateTime.now());
+    productRepository.save(product);
+
+    log.info("Stock updated for product {}: {} remaining", productId, newQuantity);
+}
+
+private ProductResponse mapToResponse(Product product) {
+    ProductResponse response = new ProductResponse();
+    response.setId(product.getId());
+    response.setName(product.getName());
+    response.setDescription(product.getDescription());
+    response.setPrice(product.getPrice());
+    response.setQuantity(product.getQuantity());
+    response.setUserId(product.getUserId());
+    response.setImageIds(product.getImageIds());
+
+    // Ajouts buy02
+    response.setCategory(product.getCategory());
+    response.setTags(product.getTags());
+    response.setIsAvailable(product.getIsAvailable());
+
+    response.setCreatedAt(product.getCreatedAt());
+    response.setUpdatedAt(product.getUpdatedAt());
+    return response;
+}
 }

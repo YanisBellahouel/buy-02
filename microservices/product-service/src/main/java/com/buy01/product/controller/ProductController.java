@@ -107,4 +107,13 @@ public ResponseEntity<List<ProductResponse>> searchProducts(
         @RequestBody SearchProductRequest request) {
     return ResponseEntity.ok(productService.searchProducts(request));
 }
+
+// PUT /api/products/{productId}/stock
+@PutMapping("/{productId}/stock")
+public ResponseEntity<Void> updateStock(
+        @PathVariable String productId,
+        @RequestParam Integer quantity) {
+    productService.updateStock(productId, quantity);
+    return ResponseEntity.ok().build();
+}
 }

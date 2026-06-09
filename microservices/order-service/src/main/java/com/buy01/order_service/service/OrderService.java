@@ -6,10 +6,11 @@ import com.buy01.order_service.model.OrderStatus;
 import com.buy01.order_service.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -17,12 +18,20 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     // Créer une commande (appelé depuis le checkout du cart)
-    public Order createOrder(Order order) {
-        order.setStatus(OrderStatus.PENDING);
-        order.setCreatedAt(LocalDateTime.now());
-        order.setUpdatedAt(LocalDateTime.now());
-        return orderRepository.save(order);
-    }
+private final StockUpdateService stockUpdateService; // Ajout
+
+public Order createOrder(Order order) {
+    order.setStatus(OrderStatus.PENDING);
+    order.setCreatedAt(LocalDateTime.now());
+    order.setUpdatedAt(LocalDateTime.now());
+    order = orderRepository.save(order);
+
+    // Décrémenter le stock après création de la commande
+    stockUpdateService.decrementStock(order);
+    log.info("Stock update requested for order: {}", order.getId());
+
+    return order;
+}
 
     // Récupérer une commande par ID
     public Order getOrderById(String orderId) {
